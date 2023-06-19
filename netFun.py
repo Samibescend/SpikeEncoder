@@ -75,13 +75,11 @@ def netFun(dt, sigmav, mu, tau_vec, s, w, C, D):
             else:
                 activation.append(0)
         fi[t + 1] = activation    
-
         ze[t + 1] = (1 - lambdaE * dt) * ze[t] + fe[t]
         re[t + 1] = (1 - alphaE * dt) * re[t] + fe[t]
-        xhatE[t + 1] = ((1 - lambdaE * dt) * xhatE[t]) + w[0] * fe[t + 1]
-
-       
         ri[t + 1] = (1 - alphaI * dt) * ri[t] + fi[t]
-        xhatI[t + 1] = (1 - lambdaI * dt) * xhatI[t] + w[1] * fi[t + 1]
+        for i in range(M):
+            xhatE[t + 1][i] = ((1 - lambdaE * dt) * xhatE[t][i]) + (w[0][i] * fe[t + 1])
+            xhatI[t + 1][i] = (1 - lambdaI * dt) * xhatI[t][i] + (w[1][i] * fi[t + 1])
 
     return fe, fi, xhatE, xhatI, re, ri
