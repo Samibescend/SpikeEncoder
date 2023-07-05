@@ -5,6 +5,7 @@ from stimFun import stimFun
 from wFun import wFun
 from netFun import netFun
 import seaborn
+import matplotlib
 
 savefig=0
 
@@ -48,7 +49,7 @@ s = stimFun(M, T, stim_type)
 w, C, D = wFun(M, N, q, d, B)
 print(np.array(C)[0])
 
-tau_vec = [1, tau_e, tau_i, tau_re, tau_ri]
+tau_vec = [tau_e, tau_i, tau_re, tau_ri]
 
 if tau_e < tau_re:
     print("adaptation in E neurons")
@@ -82,10 +83,9 @@ print(isSemiDef + " is B positive semi-definite")
 
 fe, fi, xhatE, xhatI, re, ri  = netFun(dt, sigmav, mu, tau_vec, s, w, C, D)
 
-print(re[0])
 print("over")
 
-
+"""
 with open(r"./xhat_e.txt", "w") as doc:
     for n in np.transpose(xhatE)[0][0]:
         doc.write(str(n) + "\n")
@@ -93,7 +93,6 @@ with open(r"./xhat_e.txt", "w") as doc:
 #Plot input, spikes and pop. Firing rate
 
 
-""""
 fig, axes = plt.subplots(1, 1, figsize=(12, 7))
 axes.matshow(np.transpose(fe), cmap = "binary")
 plt.tight_layout()
@@ -126,18 +125,65 @@ print("spikeHistory xhatI")
 test = seaborn.heatmap(np.reshape((xhatI), (3, 50000, 100))[0], cmap="rocket_r", cbar=False)
 plt.savefig("spikesHistoryxhatI.jpg") 
 """
+plt.clf()
+
 
 xList = [i for i in range(0, 100000)]
 print(len(np.transpose(xhatE)[0][0]))
 test = seaborn.lineplot(x = xList, y = np.transpose(xhatE)[0][0])
 plt.savefig("spikexhatE.jpg") 
+plt.clf()
 
-xList = [i for i in range(0, 100000)]
+
 print(len(np.transpose(xhatE)[1][0]))
-test = seaborn.lineplot(x = xList, y = np.transpose(xhatE)[0][0])
+test = seaborn.lineplot(x = xList, y = np.transpose(xhatE)[1][0])
 plt.savefig("spikexhatE2.jpg") 
+plt.clf()
+
+print(len(np.transpose(xhatE)[2][0]))
+test = seaborn.lineplot(x = xList, y = np.transpose(xhatE)[2][0])
+plt.savefig("spikexhatE3.jpg") 
+plt.clf()
+
+
+test = seaborn.lineplot(x = xList, y = np.transpose(re)[0])
+plt.savefig("spikerE.jpg") 
+plt.clf()
+
+test = seaborn.lineplot(x = xList, y = np.transpose(re)[1])
+plt.savefig("spikerE2.jpg") 
+plt.clf()
+
+test = seaborn.lineplot(x = xList, y = np.transpose(re)[2])
+plt.savefig("spikerE3.jpg") 
+plt.clf()
 
 xList = [i for i in range(0, 100000)]
-print(len(np.transpose(xhatE)[2][0]))
-test = seaborn.lineplot(x = xList, y = np.transpose(xhatE)[0][0])
-plt.savefig("spikexhatE3.jpg") 
+print(len(np.transpose(xhatI)[0][0]))
+test = seaborn.lineplot(x = xList, y = np.transpose(xhatI)[0][0])
+plt.savefig("spikexhatI.jpg") 
+plt.clf()
+
+
+print(len(np.transpose(xhatI)[1][0]))
+test = seaborn.lineplot(x = xList, y = np.transpose(xhatI)[1][0])
+plt.savefig("spikexhatI2.jpg") 
+plt.clf()
+
+print(len(np.transpose(xhatI)[2][0]))
+test = seaborn.lineplot(x = xList, y = np.transpose(xhatI)[2][0])
+plt.savefig("spikexhatI3.jpg") 
+plt.clf()
+
+
+test = seaborn.lineplot(x = xList, y = np.transpose(ri)[0])
+plt.savefig("spikerI.jpg") 
+plt.clf()
+
+test = seaborn.lineplot(x = xList, y = np.transpose(ri)[1])
+plt.savefig("spikerI2.jpg") 
+plt.clf()
+
+test = seaborn.lineplot(x = xList, y = np.transpose(ri)[2])
+plt.savefig("spikerI3.jpg") 
+plt.clf()

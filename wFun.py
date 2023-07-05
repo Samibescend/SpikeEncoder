@@ -14,7 +14,6 @@ def wFun(M, N, q, d, B):
     
     w[1] = w[1] * d #sets STD of decoding weights of I neurons to d*sigma_w^E (sigma_w^E=1)
 
-    print(w)
 
     #Fast connectivity matrices 
 
@@ -27,11 +26,15 @@ def wFun(M, N, q, d, B):
         w1 = weights1[i]
         w2 = weights2[i]
         proj = np.transpose(w1) @ w2
-
+        if i != 0:
+            for j in range(len(proj)):
+                for k in range(len(proj[j])):
+                    if proj[j][k] < 0:
+                        proj[j][k] = 0
         C[i] = (proj * (np.sign(proj)))
+        print(C[i])
 
     #slower connectivity matrices
-    print(B)
     D = [[], []]
     DEe = np.transpose(w[0]) @ B @ w[0]
     DIe = np.transpose(w[1]) @ B @ w[0]

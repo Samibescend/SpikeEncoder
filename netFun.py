@@ -4,13 +4,16 @@ def netFun(dt, sigmav, mu, tau_vec, s, w, C, D):
     M = len(s)
     T = len(s[0])
     N = len(w[0][0])
-    print(N)
     Ni = len(w[1][0])
 
+    spikeE = 0
+    spikeI = 0
+    print(tau_vec)
     lambdaE = 1/tau_vec[0]
     lambdaI = 1/tau_vec[1]
     alphaE = 1/tau_vec[2]
     alphaI = 1/tau_vec[3]
+
 
     deltaE = mu * (lambdaE - alphaE) #multiplies local current in E 
     deltaI = mu * (lambdaI - alphaI) #multipies local current in I 
@@ -22,9 +25,10 @@ def netFun(dt, sigmav, mu, tau_vec, s, w, C, D):
 
     DEE = D[0]
     DIE = D[1]
-
-    thresE =  np.diag(np.transpose(w[0]) @ w[0]) / (2 + (mu / 2)) #Firing threshold E neurons
-    thresI =  np.diag(np.transpose(w[1]) @ w[1]) / (2 + (mu / 2)) #Firing treshold I neurons
+    #for row in CEI:
+        #print(row)
+    thresE =  np.diag(np.transpose(w[0]) @ w[0]) /2 + (mu / 2) #Firing threshold E neurons$
+    thresI =  np.diag(np.transpose(w[1]) @ w[1]) / 2 + (mu / 2) #Firing treshold I neurons
 
     #to speed up the integration
 
@@ -49,10 +53,11 @@ def netFun(dt, sigmav, mu, tau_vec, s, w, C, D):
     ri = np.zeros((T, Ni))  # filtered spike train
     xhatI = np.zeros((T, M, Ni)) #excitatory estimate
 
-
     Ve[0]  = np.random.randn(N) * 2 - 12  #initialisation with random membrane potentials 
     Vi[0]  = np.random.randn(Ni) * 2 - 12
 
+    print(deltaE)
+    print(deltaI)
 
     for t in range(T - 1):
 
@@ -65,6 +70,7 @@ def netFun(dt, sigmav, mu, tau_vec, s, w, C, D):
         for i in range(N):
             if Ve[t + 1][i] > (thresE[i]  + noiseE[t][i]):
                 activation.append(1)
+                spikeE += 1
             else:
                 activation.append(0)
         fe[t + 1] = activation
@@ -72,6 +78,7 @@ def netFun(dt, sigmav, mu, tau_vec, s, w, C, D):
         for i in range(Ni):
             if Vi[t + 1][i] > (thresI[i]  + noiseI[t][i]):
                 activation.append(1)
+                spikeI += 1
             else:
                 activation.append(0)
         fi[t + 1] = activation    
@@ -81,5 +88,14 @@ def netFun(dt, sigmav, mu, tau_vec, s, w, C, D):
         for i in range(M):
             xhatE[t + 1][i] = ((1 - lambdaE * dt) * xhatE[t][i]) + (w[0][i] * fe[t + 1])
             xhatI[t + 1][i] = (1 - lambdaI * dt) * xhatI[t][i] + (w[1][i] * fi[t + 1])
+
+    print(spikeE)
+    print(spikeI)
+    with open(r"./ze.txt", "w") as doc:
+        for n in np.transpose(ze)[0]:
+            doc.write(str(n) + "\n")
+    with open(r"./fe.txt", "w") as doc:
+        for n in np.transpose(fe)[0]:
+            doc.write(str(n) + "\n")
 
     return fe, fi, xhatE, xhatI, re, ri
